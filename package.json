@@ -1,18 +1,22 @@
 {
-  "name": "tarx-palantir-connector",
+  "name": "palantir-aip-local-first",
   "version": "1.0.0",
-  "description": "TARX local inference connector for Palantir AIP",
+  "description": "Independent reference architecture for governed Foundry workflows and local-first AI.",
+  "type": "module",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0",
-    "better-sqlite3": "^9.0.0"
+  "engines": {
+    "node": ">=20"
   },
-  "peerDependencies": {
-    "@foundry/functions-api": "*",
-    "@osdk/client": "*",
-    "@osdk/react": "*",
-    "@palantir/lohi-ts": "*",
-    "openai": "^4.0.0"
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --import tsx --test test/*.test.ts",
+    "check": "npm run typecheck && npm test",
+    "example": "tsx examples/reference-flow.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   }
 }
