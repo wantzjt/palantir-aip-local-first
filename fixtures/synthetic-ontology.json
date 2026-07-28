@@ -1,0 +1,12 @@
+{
+  "notice": "Entirely synthetic fixture; contains no customer or Palantir tenant data.",
+  "objectType": "FieldInspection",
+  "objects": [
+    {
+      "id": "inspection-42",
+      "assetId": "compressor-demo-7",
+      "status": "PENDING_REVIEW",
+      "version": 7
+    }
+  ]
+}

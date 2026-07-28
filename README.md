@@ -1,102 +1,77 @@
-# tarx-palantir-connector
+# Palantir AIP × Local-First AI
 
-Open-source beachhead: **TARX-OS** (local-first sovereign AI runtime + bridge infrastructure) ↔ Palantir AIP Logic / Foundry.
+An independent reference architecture for combining governed Palantir Foundry
+workflows with local inference, offline resilience, and auditable routing.
 
-Routes AIP Logic and OpenAI-compatible calls to **on-device inference** so enterprise data never needs a cloud middle layer for the runtime hop.
+> This is a community project by [John Wantz Jr.](https://github.com/wantzjt).
+> It is not affiliated with, endorsed by, or sponsored by Palantir Technologies.
+> It uses synthetic data and adapter interfaces—never customer data or private
+> Palantir materials.
 
-**Zero lock-in.** Open Enterprise/Gov weights path on the TARX side. Not a Palantir product. Not a clone of Apollo — an **open complementary beachhead** for operators who think in autonomous deployment / lifecycle terms.
+## Why this exists
 
-## Status
+Enterprise AI rarely lives in one runtime. Some work belongs in a governed
+platform; some must remain on a device; and unreliable connectivity cannot be
+allowed to silently corrupt state. This repository makes those boundaries
+explicit and testable.
 
-- GitHub: https://github.com/tarx-ai/tarx-palantir-connector (public)
-- License: Apache 2.0
-- Claim-safe: **not affiliated with or endorsed by Palantir Technologies**
-
-## Thesis (why this exists)
-
-| Enterprise pain | TARX answer |
-|-----------------|-------------|
-| SaaS middleware tax on AI | Bridge infrastructure you control |
-| Closed weight stacks | Zero lock-in; Enterprise/Gov open weights path |
-| Cloud-only inference | Local-first OpenAI-compatible surface |
-| Fleet / lifecycle thinking (Apollo-class) | TARX nodes/runtime as **sovereign units** you lifecycle-manage |
-
-## One-line change
-
-```typescript
-// Before: cloud inference
-const client = new OpenAI({ baseURL: "https://aip.palantir.com/v1" })
-
-// After: TARX local — same API shape, data stays on device
-const client = new OpenAI({
-  baseURL: "http://127.0.0.1:11435/v1",
-  apiKey: "none",
-})
+```mermaid
+flowchart LR
+  R["Task request"] --> P["Policy router"]
+  P -->|"governed workflow"| F["Foundry / AIP adapter"]
+  P -->|"sensitive or offline"| L["Local inference"]
+  P -->|"policy conflict"| D["Deny + evidence"]
+  F --> O["Ontology-backed state"]
+  L --> Q["Idempotent offline queue"]
+  Q -->|"connection restored"| O
+  O --> S["Resilient subscription"]
+  P --> E["Route evidence"]
+  Q --> E
+  S --> E
 ```
 
-Default local surfaces (founder / product ports):
+## What it demonstrates
 
-| Port | Role |
-|------|------|
-| `11435` | Prime model compat proxy (OpenAI-compatible) |
-| `11440` | TARX bridge (health, product runtime) |
-| `11443` | Local chat model (Computer) |
+- Classification-aware execution decisions with explicit denial states
+- A loopback-only guard for local model endpoints
+- An idempotent offline mutation queue with conflict handling
+- Subscription recovery for stale or interrupted ontology views
+- Evidence records that explain why each important decision occurred
+- A synthetic end-to-end example, automated tests, and CI
 
-## Architecture
+This is a small, inspectable architecture—not a production Palantir connector.
+The `FoundryAdapter` boundary is where a generated OSDK client or approved API
+integration belongs.
 
+## Run it
+
+Requires Node.js 20 or newer.
+
+```bash
+npm ci
+npm run check
+npm run example
 ```
-Palantir Foundry AIP Logic
-    → Data Connection source "tarx-local"
-    → 127.0.0.1:11435/v1/chat/completions  (OpenAI-compatible)
-    → TARX-OS bridge + local inference (on device)
-    → Optional Ontology sync via OSDK when connected
-```
 
-**Language note:** product docs say **bridge / runtime / Computer** — never “daemon.”
+## Repository map
 
-## Apollo-aware (conceptual)
+- [`src/`](src/) — reusable routing, inference, queue, and subscription primitives
+- [`test/`](test/) — behavior and failure-mode tests
+- [`examples/reference-flow.ts`](examples/reference-flow.ts) — synthetic end-to-end flow
+- [`docs/architecture.md`](docs/architecture.md) — decisions and integration boundaries
+- [`docs/palantir-readiness.md`](docs/palantir-readiness.md) — production readiness checklist
+- [`docs/case-study.md`](docs/case-study.md) — the engineering story and tradeoffs
+- [`docs/provenance.md`](docs/provenance.md) — what was consolidated and intentionally excluded
+- [`docs/references.md`](docs/references.md) — primary Palantir documentation
 
-If your org uses Apollo-class autonomous deployment & lifecycle:
+## Principles
 
-- Treat each TARX install or certified **TARX on Machines** node as a **sovereign deployment unit**
-- Map health canaries → lifecycle health
-- Keep **private Supercomputer routing** off public connector docs
+1. Policy decides placement; model preference does not.
+2. “Local” is a verified network boundary, not a marketing label.
+3. Offline writes are queued, deduplicated, and reconciled deliberately.
+4. Subscription failure is visible and recoverable.
+5. Claims must be backed by code, tests, or clearly labeled design intent.
 
-No live Apollo API is required for this beachhead.
+## License
 
-## Foundry instance (this repo’s lab context)
-
-- Org: tarx.usw-3.palantirfoundry.com  
-- Ontology: TARX Ontology (lab)  
-- Objects: example aviation objects for offline/sync experiments  
-
-## Key files
-
-| File | Purpose |
-|------|---------|
-| `examples/aip-logic-local-inference.ts` | AIP Logic → TARX local |
-| `examples/osdk-offline-sync.ts` | Offline-first sync patterns |
-| `config/data-connection-source.json` | REST API source config |
-
-## DDIL matrix
-
-| Scenario | Cloud AIP alone | TARX local | TARX + mesh (when peers exist) |
-|----------|-----------------|------------|---------------------------------|
-| Full connectivity | Yes | Yes | Yes |
-| Degraded | Partial | Yes | Yes |
-| No connectivity | No | Yes | Yes |
-| Air-gapped | No | Yes | Yes |
-
-## Related public / upcoming seeds
-
-- `tarx-ai/tarx-os` — runtime / product surface  
-- `tarx-ai/tarx-mcp` — MCP tether  
-- `tarx-ai/tarx-hardware` — hardware program  
-- `tarx-ai/tarx-weights` — weights policy docs (seed)  
-- `tarx-ai/tarx-palantir` — umbrella beachhead docs (seed)
-
-## Disclaimer
-
-Not affiliated with or endorsed by Palantir Technologies.  
-Integration uses public Data Connection / OSDK patterns.  
-NVIDIA references (if any) mean **architectural influence** only — not partnership.
+Apache-2.0. See [LICENSE](LICENSE).
