@@ -37,11 +37,13 @@ flowchart LR
 - An idempotent offline mutation queue with conflict handling
 - Subscription recovery for stale or interrupted ontology views
 - Evidence records that explain why each important decision occurred
+- **TARX route-truth mapping** (`computer` / `private` / `deny`, Supercomputer only with explicit approval)
+- **Governed action bridge** to portable proposal / decision / result shapes
 - A synthetic end-to-end example, automated tests, and CI
 
-This is a small, inspectable architecture—not a production Palantir connector.
-The `FoundryAdapter` boundary is where a generated OSDK client or approved API
-integration belongs.
+This is a small, inspectable architecture—not a production Palantir connector
+and not an affiliation with Palantir Technologies. The `FoundryAdapter`
+boundary is where a generated OSDK client or approved API integration belongs.
 
 ## Run it
 

@@ -64,6 +64,22 @@ time, reason, and outcome. In production, send these records to an append-only
 audit sink with authenticated actor, policy version, correlation id, and
 retention metadata.
 
+## TARX route truth mapping
+
+This repository maps placement decisions onto TARX runtimes without claiming a
+production TARX or Palantir connector:
+
+| Policy target | TARX runtime | Notes |
+| --- | --- | --- |
+| `local` | `computer` | Device-local default |
+| `foundry` | `private` | Enterprise-governed plane |
+| `deny` | `deny` | No silent remote fallback |
+| *(explicit only)* | `supercomputer` | Requires `approveSupercomputerEscalation` |
+
+See `src/tarx-route-map.ts` and `src/governed-action-bridge.ts` for executable
+proposal / decision / result shapes aligned with
+[governed-agent-contracts](https://github.com/tarx-ai/governed-agent-contracts).
+
 ## Deliberate omissions
 
 - Live Palantir credentials or tenant configuration
@@ -71,3 +87,4 @@ retention metadata.
 - Claims of exactly-once delivery
 - Automatic conflict resolution without a domain policy
 - A remote fallback disguised as local execution
+- Implicit Supercomputer / cloud escalation
